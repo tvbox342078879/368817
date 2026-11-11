@@ -1,0 +1,440 @@
+{
+  "schema": "codebuddy-eco.deploy_verify/v1",
+  "generated_at": "2026-11-11T11:08:04+08:00",
+  "root": "/workspace/bootstrap-kit",
+  "mode": "apply",
+  "scenario": "B-待部署（缺：git 历史、用户级基座，需 --apply）",
+  "state": {
+    "label": "B-待部署（缺：git 历史、用户级基座，需 --apply）",
+    "has_eco": true,
+    "has_sop_same_level": true,
+    "has_git_history": false,
+    "has_user_base": false,
+    "missing_deployable": [
+      "git 历史",
+      "用户级基座"
+    ],
+    "missing_manual": [],
+    "needs_apply": true,
+    "note": "手机三通道 / 重启宿主 / L2 生效恒为人工或新会话侧，脚本不代做"
+  },
+  "sop_same_level_hint": "SOP 须与 codebuddy-eco/ 同级",
+  "checks": [
+    {
+      "id": "S0.pwd",
+      "phase": "S0-env",
+      "title": "确认真实工作目录",
+      "cmd": "pwd -P",
+      "exit_code": 0,
+      "stdout": "/workspace/bootstrap-kit",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "输出新项目根绝对路径",
+      "tri_state_hint": "真阴性=目录不对，立即停下"
+    },
+    {
+      "id": "S0.ls",
+      "phase": "S0-env",
+      "title": "列出根目录条目",
+      "cmd": "ls -a",
+      "exit_code": 0,
+      "stdout": ".\n..\n01-DECISIONS.md\n02-COLD-START.md\n03-ACCEPTANCE.md\ncodebuddy-eco\nCodeBuddy-会话中文风格统一-SOP.md\nSTART-HERE.md",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "见 codebuddy-eco/ 与 SOP 同级",
+      "tri_state_hint": "无法判定=看不到输出"
+    },
+    {
+      "id": "S0.git",
+      "phase": "S0-env",
+      "title": "探本地历史",
+      "cmd": "git log --oneline -1",
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "fatal: not a git repository (or any of the parent directories): .git",
+      "state": "真阴性",
+      "expect": "有提交; not a git repository 属真阴性(场景B正常)",
+      "tri_state_hint": "真阴性=尚未 init"
+    },
+    {
+      "id": "S1.sop",
+      "phase": "S1-samelevel",
+      "title": "SOP 同级校验",
+      "cmd": "test -f \"../CodeBuddy-会话中文风格统一-SOP.md\" && echo SOP_OK",
+      "exit_code": 0,
+      "stdout": "SOP_OK",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "SOP_OK",
+      "tri_state_hint": "真阴性=不同级, 6 处指针全断"
+    },
+    {
+      "id": "S1.eco",
+      "phase": "S1-samelevel",
+      "title": "骨架目录校验",
+      "cmd": "test -d codebuddy-eco && echo ECO_OK",
+      "exit_code": 0,
+      "stdout": "ECO_OK",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "ECO_OK",
+      "tri_state_hint": "真阴性=骨架缺失"
+    },
+    {
+      "id": "S1.count",
+      "phase": "S1-samelevel",
+      "title": "受控文件数(排除 .git)",
+      "cmd": "find codebuddy-eco -path codebuddy-eco/.git -prune -o -type f -print | wc -l",
+      "exit_code": 0,
+      "stdout": "15",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "15",
+      "tri_state_hint": "真阴性≠15",
+      "parsed": "15"
+    },
+    {
+      "id": "S3.skills",
+      "phase": "S3-assets",
+      "title": "4 技能就位",
+      "cmd": "find .codebuddy/skills -name SKILL.md | sort",
+      "exit_code": 0,
+      "stdout": ".codebuddy/skills/artifact-store/SKILL.md\n.codebuddy/skills/feature-gate/SKILL.md\n.codebuddy/skills/machine-bootstrap/SKILL.md\n.codebuddy/skills/skill-evolution/SKILL.md",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "4 个 SKILL.md",
+      "tri_state_hint": "真阴性≠4",
+      "parsed": "4"
+    },
+    {
+      "id": "S3.rules",
+      "phase": "S3-assets",
+      "title": "规则/薄壳/MANIFEST 就位",
+      "cmd": "ls .codebuddy/rules/ .codebuddy/CODEBUDDY.md .codebuddy/MANIFEST.json",
+      "exit_code": 0,
+      "stdout": ".codebuddy/CODEBUDDY.md\n.codebuddy/MANIFEST.json\n\n.codebuddy/rules/:\ndocs.paths.md\nzh-style.md",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "退出码 0",
+      "tri_state_hint": "真阴性=缺文件"
+    },
+    {
+      "id": "L0.files",
+      "phase": "L0-integrity",
+      "title": "L0 受控文件数",
+      "cmd": "find . -path ./.git -prune -o -type f -print | wc -l",
+      "exit_code": 0,
+      "stdout": "15",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "15",
+      "tri_state_hint": "真阴性≠15",
+      "parsed": "15"
+    },
+    {
+      "id": "L0.sop",
+      "phase": "L0-integrity",
+      "title": "L0 SOP 同级",
+      "cmd": "test -f \"../CodeBuddy-会话中文风格统一-SOP.md\" && echo SOP_SAME_LEVEL",
+      "exit_code": 0,
+      "stdout": "SOP_SAME_LEVEL",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "SOP_SAME_LEVEL",
+      "tri_state_hint": "真阴性=不同级"
+    },
+    {
+      "id": "L0.pyc",
+      "phase": "L0-integrity",
+      "title": "L0 无 pyc 残留",
+      "cmd": "find . -name __pycache__ -type d | wc -l",
+      "exit_code": 0,
+      "stdout": "0",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "0",
+      "tri_state_hint": "真阴性≠0",
+      "parsed": "0"
+    },
+    {
+      "id": "L1.default",
+      "phase": "L1-machinecheck",
+      "title": "机检 默认",
+      "cmd": "python3 -B verify/terminology_check.py",
+      "exit_code": 0,
+      "stdout": "=== 口径统一性机检 (registry 第七节为唯一配置源) ===\n扫描范围: 13 个 .md\n\n[PASS] ① 真源登记表文件齐备 — 15/15 全部存在\n[PASS] ⑥ MANIFEST.json 合法 — rules 段 5 格\n[PASS] ② 受控词表跨层误用 — 扫描 13 个 .md，0 处误用\n[PASS] ③ 编号命名空间 — B-01..B-08 共 8 个，无越界/无跳号\n[PASS] ④ 章节引用断链 — 扫描 110 处 §/20.x 引用，0 断链\n[PASS] ⑤ 铁律正文被复制(M2) — 非真源文件 0 处复制；薄壳内联为 M7 已登记例外\n[P",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "退出码 0",
+      "tri_state_hint": "真阴性≠0"
+    },
+    {
+      "id": "L1.strict",
+      "phase": "L1-machinecheck",
+      "title": "机检 --strict",
+      "cmd": "python3 -B verify/terminology_check.py --strict",
+      "exit_code": 0,
+      "stdout": "=== 口径统一性机检 (registry 第七节为唯一配置源) ===\n扫描范围: 13 个 .md\n\n[PASS] ① 真源登记表文件齐备 — 15/15 全部存在\n[PASS] ⑥ MANIFEST.json 合法 — rules 段 5 格\n[PASS] ② 受控词表跨层误用 — 扫描 13 个 .md，0 处误用\n[PASS] ③ 编号命名空间 — B-01..B-08 共 8 个，无越界/无跳号\n[PASS] ④ 章节引用断链 — 扫描 110 处 §/20.x 引用，0 断链\n[PASS] ⑤ 铁律正文被复制(M2) — 非真源文件 0 处复制；薄壳内联为 M7 已登记例外\n[P",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "退出码 0",
+      "tri_state_hint": "真阴性≠0"
+    },
+    {
+      "id": "L1.sop",
+      "phase": "L1-machinecheck",
+      "title": "机检 --sop",
+      "cmd": "python3 -B verify/terminology_check.py --sop \"../CodeBuddy-会话中文风格统一-SOP.md\"",
+      "exit_code": 0,
+      "stdout": "=== 口径统一性机检 (registry 第七节为唯一配置源) ===\n扫描范围: 14 个 .md（含 SOP）\n\n[PASS] ① 真源登记表文件齐备 — 15/15 全部存在\n[PASS] ⑥ MANIFEST.json 合法 — rules 段 5 格\n[PASS] ② 受控词表跨层误用 — 扫描 14 个 .md，0 处误用\n[PASS] ③ 编号命名空间 — B-01..B-08 共 8 个，无越界/无跳号\n[PASS] ④ 章节引用断链 — 扫描 310 处 §/20.x 引用，0 断链\n[PASS] ⑤ 铁律正文被复制(M2) — 非真源文件 0 处复制；薄壳内联为 M7 已",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "退出码 0; 0 断链",
+      "tri_state_hint": "真阴性=断链"
+    },
+    {
+      "id": "L1.json",
+      "phase": "L1-machinecheck",
+      "title": "机检 --json(机读)",
+      "cmd": "python3 -B verify/terminology_check.py --json --strict --sop \"../CodeBuddy-会话中文风格统一-SOP.md\"",
+      "exit_code": 0,
+      "stdout": "{\n  \"schema\": \"codebuddy-eco/verify/v1\",\n  \"snapshot_only\": true,\n  \"note\": \"拉取式只读快照，非实时联动、无事件流；面板只呈现已发生事实，不预测进度\",\n  \"config_source\": \"docs/registry.md 第七节机读真源区\",\n  \"strict\": true,\n  \"sop_attached\": true,\n  \"scanned_md_files\": 14,\n  \"section_refs_total\": 310,\n  \"section_refs_broken\": 0,\n  \"summary\":",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "ok=True exit_code=0",
+      "tri_state_hint": "解析合并进报告"
+    },
+    {
+      "id": "L1.manifest",
+      "phase": "L1-machinecheck",
+      "title": "MANIFEST JSON 合法",
+      "cmd": "python3 -c \"import json;json.load(open('.codebuddy/MANIFEST.json'))\"",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "state": "真阳性",
+      "expect": "退出码 0",
+      "tri_state_hint": "真阴性≠0"
+    }
+  ],
+  "actions": [
+    {
+      "id": "S2.gitinit",
+      "cmd": "git init && git add . && git -c user.name='eco-local' -c user.email='eco@localhost.invalid' commit -m \"eco bootstrap: import codebuddy-eco scaffold\"",
+      "status": "applied",
+      "exit_code": 0,
+      "stdout": "Initialized empty Git repository in /workspace/bootstrap-kit/codebuddy-eco/.git/\n[master (root-commit) 2f62503] eco bootstrap: import codebuddy-eco scaffold\n 15 files changed, 1332 insertions(+)\n crea",
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: is subject to change. To configure the initial branch name to use in all\nhint: of your new repositories, which will suppress this warning, call:\nhint: \nhint: \tgit config --global init.defaultBranch <name>\nhint: \nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The jus",
+      "state": "真阳性"
+    },
+    {
+      "id": "S4.base",
+      "cmd": "mkdir -p ~/.codebuddy/rules && cp base/rules/core-8.md ~/.codebuddy/rules/core-8.md && test -f ~/.codebuddy/rules/core-8.md && echo BASE_INSTALLED",
+      "status": "applied",
+      "exit_code": 0,
+      "stdout": "BASE_INSTALLED",
+      "stderr": "",
+      "state": "真阳性"
+    },
+    {
+      "id": "S5.channel",
+      "title": "手机三通道 + 重启宿主",
+      "status": "人工",
+      "state": "无法判定",
+      "note": "文件带不过去；规则改动后须重启，/clear 不算"
+    }
+  ],
+  "pending_actions": [],
+  "machine_check": {
+    "source": "verify/terminology_check.py --json",
+    "schema": "codebuddy-eco/verify/v1",
+    "summary": {
+      "pass": 8,
+      "warn": 0,
+      "fail": 0,
+      "effective_fail": 0,
+      "ok": true
+    },
+    "check_count": 8,
+    "checks": [
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      },
+      {
+        "name": null,
+        "status": null
+      }
+    ],
+    "scanned_md_files": 14,
+    "section_refs_total": 310,
+    "section_refs_broken": 0,
+    "strict": true,
+    "sop_attached": true,
+    "exit_code": 0
+  },
+  "token_hits": 0,
+  "l2_manual": [
+    {
+      "id": "L2.zh",
+      "trigger": "用中文提一个简单问题",
+      "true_positive": "全程简体中文",
+      "true_negative": "出现成段英文",
+      "undetermined": "读不到回复 / 环境异常",
+      "state": "真阳性",
+      "evidence": "本会话全程简体中文输出，与 core-8 M1 语言条 + zh-style 一致；规则已在 context 且被遵守，机制链路通；沙箱观测，不证真机宿主独立强制。",
+      "v2": true
+    },
+    {
+      "id": "L2.base",
+      "trigger": "提一个涉及「命令输出怎么判」的问题",
+      "true_positive": "按三态回答",
+      "true_negative": "答成「没查到=没有」",
+      "undetermined": "无法确认加载",
+      "state": "真阳性",
+      "evidence": "会话开场 system-reminder 含 /root/.codebuddy/rules/core-8.md 全文(<always_applied_workspace_rules>)，证明用户级基座已加载进本会话；沙箱会话内观测，不证真机。",
+      "v2": true
+    },
+    {
+      "id": "L2.skill",
+      "trigger": "说「这个错反复出现，沉淀成技能」",
+      "true_positive": "skill-evolution 被识别",
+      "true_negative": "完全无反应",
+      "undetermined": "不确定是否触发",
+      "state": "无法判定",
+      "evidence": "4 个 SKILL.md 文件完好、MANIFEST 已声明、薄壳列为官方自动加载；但本会话 active skills 列表(/root/.codebuddy/skills)未含这些项目技能，未观测到宿主按意图自动路由调用；无法重启宿主，记无法判定。",
+      "v2": true
+    },
+    {
+      "id": "L2.cond",
+      "trigger": "编辑 docs/x.md 看 docs.paths.md 是否注入; 编辑非 docs 文件看是否不注入",
+      "true_positive": "命中才注入",
+      "true_negative": "常驻乱注入",
+      "undetermined": "观察不到注入",
+      "state": "无法判定",
+      "evidence": "docs.paths.md 存在且 frontmatter 合法(alwaysApply:false, paths:[docs/**/*.md])；机制定义正确。但本沙箱宿主在 Read/Write docs 文件时未注入该条件规则(仅 CODEBUDDY.md 被注入)；无法重启宿主实测真机链路，记无法判定。",
+      "v2": true
+    },
+    {
+      "id": "L2.shell",
+      "trigger": "一次中文提问看薄壳是否被读到",
+      "true_positive": "三不可协商 + 5 铁律有体现",
+      "true_negative": "完全无体现",
+      "undetermined": "读不到",
+      "state": "真阳性",
+      "evidence": "Read CODEBUDDY.md 时宿主将其作为 <conditional_workspace_rules> 注入本会话，证明薄壳加载；沙箱会话内观测。",
+      "v2": true
+    },
+    {
+      "id": "L2.mobile",
+      "trigger": "手机 App 里同样提问",
+      "true_positive": "与桌面一致",
+      "true_negative": "手机端失效",
+      "undetermined": "未在手机验证",
+      "state": "无法判定",
+      "evidence": "手机 App 验证为人工动作，文件带不过沙箱；02 步骤5 人工，恒无法判定。",
+      "v2": true
+    }
+  ],
+  "boundaries": {
+    "另一沙箱 / 另一会话 / 手机端生效": "无法判定",
+    "技能文件改动是否需重启": "无法判定（官方 Skills 文档未明说，不类推 Memory 口径）",
+    "手机端「给 WorkBuddy 的指令」是否设置": "无法判定（人工动作，文件带不过去）",
+    "规则是否被宿主加载并语义触发": "无法判定（需新会话 L2 实测）",
+    "审查侧是否参与执行 / 确认结果": "否（不联动、看不到对面）",
+    "L1 全绿能证明什么": "仅「包自洽」= 结构 / 规范 / 机检；不证明生效"
+  },
+  "tri_state_report_template": {
+    "项: 场景": "A（同环境新会话）/ B（全新沙箱）",
+    "项: L0 文件数": "？",
+    "项: L0 SOP同级": "？",
+    "项: L1 默认/strict/含SOP/json/MANIFEST 退出码": "？/？/？/？/？",
+    "项: L1 汇总": "PASS ？/ WARN ？/ FAIL ？",
+    "项: L2 全程中文": "真阳性 / 真阴性 / 无法判定",
+    "项: L2 基座加载": "真阳性 / 真阴性 / 无法判定",
+    "项: L2 技能触发": "真阳性 / 真阴性 / 无法判定",
+    "项: L2 条件规则命中": "真阳性 / 真阴性 / 无法判定",
+    "项: L2 手机端生效": "真阳性 / 真阴性 / 无法判定",
+    "项: 总判定": "全部真阳性且 L1 全 0 → 通过；否则记「无法判定」并附原因"
+  },
+  "state_note": "state = 执行前快照；state_after = --apply 完成后复测；两者都只反映可自动探测项",
+  "state_after": {
+    "label": "A-已就位（同环境新会话，纯验机 + L2）",
+    "has_eco": true,
+    "has_sop_same_level": true,
+    "has_git_history": true,
+    "has_user_base": true,
+    "missing_deployable": [],
+    "missing_manual": [],
+    "needs_apply": false,
+    "note": "手机三通道 / 重启宿主 / L2 生效恒为人工或新会话侧，脚本不代做"
+  },
+  "summary": {
+    "checks_total": 16,
+    "checks_true_positive": 15,
+    "checks_true_negative": 1,
+    "checks_undetermined": 0,
+    "state_counts_consistent": true,
+    "true_negative_ids": [
+      "S0.git"
+    ],
+    "expected_true_negative_ids": [
+      "S0.git"
+    ],
+    "gate_failure_ids": [],
+    "l1_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "l1_all_zero": true,
+    "machine_check_ok": true,
+    "machine_check_pass_warn_fail": [
+      8,
+      0,
+      0
+    ],
+    "section_refs_broken": 0,
+    "token_hits": 0,
+    "auto_layer_conclusion": "真阳性（包自洽：结构/规范/机检）",
+    "effective_layer_conclusion": "无法判定（需新会话按 l2_manual[] 三态实测，本执行器不伪造）",
+    "next_actions": [
+      "读 state.needs_apply：为 true 时先跑 --apply 补 git 历史与用户级基座",
+      "读 l2_manual[]，逐项用 trigger 触发，按三态回填 state 与 evidence",
+      "填 tri_state_report_template，输出最终三态报告",
+      "不要把「无法判定」写成「真阳性」；不要向原审查侧会话求证",
+      "若 auto_layer_conclusion 为真阴性，回 docs/registry.md 查真源（M6），不在副本打补丁"
+    ]
+  },
+  "l2_filled_at": "2026-11-11T11:09+08:00",
+  "l2_filled_note": "L2 按机读流程第7步回填：本沙箱无法触发真机宿主语义加载/未重启宿主/手机端未设，全部保持无法判定，未伪造真阳性",
+  "l2_v2_filled_at": "2026-11-11T11:25+08:00",
+  "l2_v2_note": "L2 v2 回填：base/zh/shell 为本沙箱会话内实测观测(机制链路通)，cond/skill/mobile 因无法重启宿主或沙箱不可测记无法判定；沙箱L2不证真机/手机生效。",
+  "effective_layer_conclusion": "无法判定（L2 需新会话/真机实测；本沙箱仅观测到 base/zh/shell 机制链路通）"
+}
