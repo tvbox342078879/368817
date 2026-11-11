@@ -1,0 +1,9 @@
+# 生态部署包只含 .codebuddy/；以下为需排除的遗留/产物
+codebuddy-eco/
+codebuddy-eco-bootstrap.tar.gz
+CodeBuddy-会话中文风格统一-SOP.md
+panel/
+技能侧-技能速查卡.md
+新会话-部署与验证操作卡.md
+规则侧-操作卡.md
+规则侧-规则速查卡.md
