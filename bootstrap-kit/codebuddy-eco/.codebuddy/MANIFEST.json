@@ -1,0 +1,80 @@
+{
+  "ecosystem": "codebuddy-eco",
+  "version": "0.1.0",
+  "based_on": "CodeBuddy-会话中文风格统一-SOP.md (SOP 第0.5–19章)",
+  "reference": "tvbox-eco (仅结构借鉴，不搬业务)",
+  "principles": {
+    "ssot": "Git 为唯一真源；本地检查点仅会话内撤销",
+    "load_path": "官方 Memory 文档：项目记忆可存 ./CODEBUDDY.md 或 ./.codebuddy/CODEBUDDY.md（两处皆官方合法）；项目规则 ./.codebuddy/rules/、技能 ./.codebuddy/skills/、用户级 ~/.codebuddy/rules/。本生态薄壳实体固定 .codebuddy/CODEBUDDY.md（只放一处），另加手机指令三通道兜底",
+    "no_hooks_dependency": "强制逻辑落在配置/薄壳，不押钩子（本生态实测：手机/云端任务不跑钩子；官方文档未作此声明，见 SOP 20.12.2）",
+    "language": "全程简体中文，换模型/会话/压缩不漂"
+  },
+  "skills": {
+    "skill-evolution": {
+      "role": "复发问题自动固化成技能",
+      "layer": "基建/治理",
+      "provides": ["复发检测", "技能脚手架生成", "经验固化"],
+      "emits": ["skill.proposed", "skill.landed"],
+      "depends_on": []
+    },
+    "machine-bootstrap": {
+      "role": "一键换机/克隆工作副本",
+      "layer": "基建/底座",
+      "provides": ["幂等克隆工作副本", "三通道校验"],
+      "emits": ["bootstrap.done"],
+      "depends_on": ["git-remote"]
+    },
+    "feature-gate": {
+      "role": "特性开关+绞杀者切流",
+      "layer": "基建/底座",
+      "provides": ["特性开关", "绞杀者切流", "灰度回滚"],
+      "emits": ["gate.rolled", "gate.reverted"],
+      "depends_on": []
+    },
+    "artifact-store": {
+      "role": "本地轻量化总闸·防手机卡顿",
+      "layer": "基建/治理",
+      "provides": ["产物LRU归档", "超大主题文件兜底归档", "会话归档引导", "远程检索编排"],
+      "native_reuse": ["v2.51.0 记忆目录摘要+自动清理", "/clear", "移动端删/归档会话", "Subagents", "/compact", "条件规则paths", "parentDiscovery"],
+      "emits": ["artifact.archived", "memory.backup-archived"],
+      "depends_on": ["knowledge-base", "skill-evolution"]
+    }
+  },
+  "rules": {
+    "_layers": "三分离（SOP 20.9）：作用域(用户级/项目级) × 触发(alwaysApply/paths) × 强制力(软声明→deny)；台账归 docs；弃用 hot/warm/cold；不押钩子",
+    "user_base": {
+      "template": "base/rules/core-8.md",
+      "install_to": "~/.codebuddy/rules/core-8.md",
+      "scope": "用户级·跨项目",
+      "alwaysApply": true,
+      "role": "8条通用铁律唯一真源（去TVBox化）",
+      "covers": ["语言", "三态", "先验", "并行", "零明文凭证", "事实源", "换模型对账", "正本入口"]
+    },
+    "zh-style": {
+      "path": ".codebuddy/rules/zh-style.md",
+      "scope": "项目级",
+      "alwaysApply": true,
+      "role": "项目专属契约 + §8 本地轻量纪律",
+      "covers": ["§0分层声明", "§1-7继承指针+项目专属", "§8本地轻量纪律(防卡顿·官方一手)"]
+    },
+    "docs.paths": {
+      "path": ".codebuddy/rules/docs.paths.md",
+      "scope": "项目级·条件",
+      "alwaysApply": false,
+      "paths": ["docs/**/*.md"],
+      "role": "文档↔MANIFEST↔governance 同步契约（paths 命中才注入）"
+    },
+    "ledger": {
+      "path": "docs/rule-ledger.md",
+      "scope": "台账·不进context",
+      "role": "schema/强制力/去重/降级/owner/探针/变更留痕"
+    }
+  },
+  "thin_shell": {
+    "path": ".codebuddy/CODEBUDDY.md",
+    "loads_on": ["手机任务", "云端任务", "桌面CLI"]
+  },
+  "event_bus": {
+    "note": "轻量版：技能间通过 emits/depends_on 解耦；不引入中心 hub（学 ecosys-conductor 去 god-object 思路）"
+  }
+}
